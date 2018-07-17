@@ -1,0 +1,109 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	
+	<form action="{{ path_for('order.create') }}" method="post" id="checkout-form">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="row">
+					<div class="col-md-6">
+						<h3>Tu información</h3>
+						<hr>
+						<div class="form-group {% if errors.email %} has-error {% endif %}">
+							<label for="email">Email</label>
+							<input type="email" name="email" id="email" class="form-control">
+                            {% if errors.email %}
+                                <span class="help-block">
+                                    {{ errors.email }}
+							    </span>
+                            {% endif %}
+						</div>
+						<div class="form-group {% if errors.name %} has-error {% endif %}">
+							<label for="name">Nombre Completo</label>
+							<input type="text" name="name" id="name" class="form-control">
+                            {% if errors.name %}
+                                <span class="help-block">
+                                    {{ errors.name }}
+							    </span>
+                            {% endif %}
+						</div>
+					</div>
+					<div class="col-md-6">
+						<h3>Dirección de envío</h3>
+						<hr>
+						<div class="form-group {% if errors.address1 %} has-error {% endif %}">
+							<label for="address1">Direccion de casa 1</label>
+							<input type="text" name="address1" id="address1" class="form-control">
+                            {% if errors.address1 %}
+                                <span class="help-block">
+                                    {{ errors.address1 }}
+							    </span>
+                            {% endif %}
+						</div>
+						<div class="form-group {% if errors.address2 %} has-error {% endif %}">
+							<label for="address2">Direccion de casa 2</label>
+							<input type="text" name="address2" id="address2" class="form-control">
+                            {% if errors.address2 %}
+                                <span class="help-block">
+                                    {{ errors.address2 }}
+							    </span>
+                            {% endif %}
+						</div>
+						<div class="form-group {% if errors.city %} has-error {% endif %}">
+							<label for="city">Ciudad</label>
+							<input type="text" name="city" id="city" class="form-control">
+                            {% if errors.city %}
+                                <span class="help-block">
+                                    {{ errors.city }}
+							    </span>
+                            {% endif %}
+						</div>
+						<div class="form-group {% if errors.postal_code %} has-error {% endif %}">
+							<label for="postal_code">Codigo Postal</label>
+							<input type="text" name="postal_code" id="postal_code" class="form-control">
+                            {% if errors.postal_code %}
+                                <span class="help-block">
+                                    {{ errors.postal_code }}
+							    </span>
+                            {% endif %}
+						</div>
+					</div>
+				</div>
+				<h3>Payments</h3>
+				<hr>
+
+				<div id="dropin-container"></div>
+
+			</div>
+			<div class="col-md-4">
+				<div class="well">
+					<h4>Tu orden</h4>
+					<hr>
+					{% include 'cart/contents.twig' %}
+					{% include 'cart/total.twig' %}
+					<button type="submit" id="checkout" class="btn btn-default">Realizar Pedido</button>
+				</div>
+			</div>
+		</div>
+	</form>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://js.braintreegateway.com/js/braintree-2.24.1.min.js"></script>
+    <script>
+        var form = document.querySelector('#checkout-form');
+        $.ajax({
+            url: '{{ path_for('braintree.token') }}',
+            type: 'get',
+            dataType: 'json'
+        }).done(function (data) {
+            braintree.setup(data.token, 'dropin', {
+                container: 'dropin-container',
+                paypal: {
+
+                }
+            });
+        });
+    </script>
+{% endblock %}
